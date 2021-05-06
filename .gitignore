@@ -6,3 +6,4 @@ LitCoin_data
 test.py
 *.pyc
 *.ipynb
+.vscode*
