@@ -132,9 +132,9 @@ df_index = pd.read_parquet('C:/Users/adam/Desktop/tradeBOT/Bitcoin_data/bitcoin_
 #print(np.all(timestampdiff == 60))
 
 #########df.fillna(method='ffill', inplace=True)
-df_index.replace(0, np.nan, inplace=True)
-df_index.fillna(method='ffill', inplace=True)
-df_index.to_csv('C:/Users/adam/Desktop/tradeBOT/Bitcoin_data/bitcoin_data_indexxxx.csv')
+#df_index.replace(0, np.nan, inplace=True)
+#df_index.fillna(method='ffill', inplace=True)
+#df_index.to_csv('C:/Users/adam/Desktop/tradeBOT/Bitcoin_data/bitcoin_data_indexxxx.csv')
 #print(df_index)
 
 ##TEST
