@@ -7,3 +7,4 @@ test.py
 *.pyc
 *.ipynb
 .vscode*
+BTCUSDT_data

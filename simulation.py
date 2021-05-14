@@ -1,18 +1,68 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
+import functools
+import time
+from pandas.io.parquet import read_parquet
+from download_price_data import create_directory
 
-def simulation(amount_of_crypto, after_how_many_days_sell):
-    datas = pd.read_parquet('C:/Users/adam/Desktop/tradeBOT/Bitcoin_data/bitcoin_data_indexxxx.pq')
-    when_to_buy = pd.read_parquet('C:/Users/adam/Desktop/tradeBOT/Bitcoin_data/bitcoin_usd_min_dates.pq')
+def test(path):
+    df = pd.read_parquet(path)
+    timestampdiff = np.diff(df.t.values)
+    #print(timestampdiff)
+    #print(np.where(timestampdiff != 60000000000))
+    #assert np.all(timestampdiff == 60000000000)
 
+
+def timer(func):
+    """Print the runtime of the decorated function"""
+    @functools.wraps(func)
+    def wrapper_time(*args, **kwargs):
+        # Do something before\
+        start_time = time.perf_counter() # 1
+        value = func(*args, **kwargs)
+        # Do something after
+        end_time = time.perf_counter() # 2
+        run_time = end_time - start_time
+        print(f'Finished {func.__name__!r} in {run_time:.4f} secs')
+        return wrapper_time
+    return wrapper_time
+
+
+@timer
+def simulation(main_file, file_with_dates, amount_of_crypto, after_how_many_days_sell, cryptosymbol):
+    datas = pd.read_parquet(main_file)
+    when_to_buy = pd.read_parquet(file_with_dates)
+    bought_crypto_value = 0
     list_of_when_to_buy = when_to_buy['Dates'].tolist()
     datas.set_index(['t'], inplace=True)
-    print(list_of_when_to_buy)
+    print(datas)
+    balance = []
     for data in datas.index:
+        #print(data)
         if data in list_of_when_to_buy:
-            bought_crypto_value = datas.loc[data]['o'] * amount_of_crypto
-            after_some_days = data + timedelta(days=after_how_many_days_sell)
-            eventual_balance = (datas.loc[after_some_days]['o'] * amount_of_crypto) - bought_crypto_value
-            print(eventual_balance)
-simulation(2, 30)
+            #print(f'Data {data}')
+            try:
+                print(bought_crypto_value)
+                bought_crypto_value = datas.loc[data]['o'] * amount_of_crypto
+                #print(bought_crypto_value)
+                after_some_days = data + timedelta(days=after_how_many_days_sell)
+                eventual_balance = (datas.loc[after_some_days]['o'] * amount_of_crypto) - bought_crypto_value
+                balance.append(eventual_balance)
+                print(eventual_balance)
+            except Exception as e:
+                print(f'error found: {e}')
+
+
+    print(balance)
+    eventualdf = pd.DataFrame(balance, columns=['balance'])
+    create_directory(f'C:/Users/adam/Desktop/tradeBOT/{cryptosymbol}_data/simulation/7_days_window')
+    eventualdf.to_parquet(f'C:/Users/adam/Desktop/tradeBOT/{cryptosymbol}_data/simulation/7_days_window/{amount_of_crypto}o{after_how_many_days_sell}')
+    print(eventualdf)
+
+x = 1
+
+
+while x < 50:
+    simulation('C:/Users/adam/Desktop/tradeBOT/Bitcoin_data/bitcoin_data_indexxxx.pq', 'C:/Users/adam/Desktop/tradeBOT/BTCUSDT_data/model_7_days_min/min_BTCUSDT_dates.pq', 1, x, 'BTCUSDT')
+    x += 3
