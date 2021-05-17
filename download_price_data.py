@@ -19,7 +19,7 @@ def make_request_create_parque(crypto_symbol, resolution, from_timestamp, to_tim
     print('Making a request')
     api_link = f'https://finnhub.io/api/v1/crypto/candle?symbol=BINANCE:{crypto_symbol}&resolution={resolution}&from={from_timestamp}&to={to_timestamp}&token=c2adi7aad3iegn22dis0'
     api_request = requests.get(api_link)
-    max_trials = 5
+    max_trials = 10
     trials = 0
     while True:
         trials += 1
@@ -82,7 +82,7 @@ def create_directory(path):
             pass
 
 
-def loop_every_500_rows_and_make_request(from_date: datetime, to_date: datetime, cryptosymbol) -> None:
+def loop_every_500_rows_and_make_request(from_date: datetime, to_date: datetime, cryptosymbol):
     """Main function"""
     create_directory(f'C:/Users/adam\Desktop/tradeBOT/{cryptosymbol}_data')
     from_date_current_request = from_date
@@ -102,17 +102,19 @@ def loop_every_500_rows_and_make_request(from_date: datetime, to_date: datetime,
     
 
     save_generated_files_to_csv(f'C:/Users/adam\Desktop/tradeBOT/{cryptosymbol}_data/{cryptosymbol}', f'{cryptosymbol}_data/{cryptosymbol}.csv')
-    convert_csv_to_parquet(f'C:/Users/adam\Desktop/tradeBOT/{cryptosymbol}_data/{cryptosymbol}', f'{cryptosymbol}_data/{cryptosymbol}.pq')
+    convert_csv_to_parquet(f'C:/Users/adam\Desktop/tradeBOT/{cryptosymbol}_data/{cryptosymbol}.csv', f'{cryptosymbol}_data/{cryptosymbol}.pq')
 
     
     # assertion whether data is sorted by time or not
-    df = pd.read_parquet('Ethereum_data/Ethereum_data.pq')
+    df = pd.read_parquet(f'{cryptosymbol}_data/{cryptosymbol}.pq')
     timestampdiff = np.diff(df.t.values)
     print(timestampdiff)
     print(np.all(timestampdiff == 60))
     assert np.all(timestampdiff == 60)
 
-#loop_every_500_rows_and_make_request(datetime(2020, 4, 16), datetime(2021, 5, 10), 'ETHUSDT')
+#loop_every_500_rows_and_make_request(datetime(2015, 5, 30), datetime(2020, 5, 10), 'ETHUSDT')
+
+
 def test(path):
     df = pd.read_parquet(path)
     timestampdiff = np.diff(df.index)
