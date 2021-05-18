@@ -15,7 +15,6 @@ finnhub_client = finnhub.Client(api_key=api_key)
 
 
 def make_request_create_parque(crypto_symbol, resolution, from_timestamp, to_timestamp, folder_filename):
-
     print('Making a request')
     api_link = f'https://finnhub.io/api/v1/crypto/candle?symbol=BINANCE:{crypto_symbol}&resolution={resolution}&from={from_timestamp}&to={to_timestamp}&token=c2adi7aad3iegn22dis0'
     api_request = requests.get(api_link)
@@ -31,6 +30,7 @@ def make_request_create_parque(crypto_symbol, resolution, from_timestamp, to_tim
             print('Creating Parquet')
             parquet = df.to_parquet(folder_filename)
             print(pd.read_parquet(folder_filename))
+            break #######IF SOMETHING DOES NOT WORK REMOVING THIS MIGHT BE SOLUTION
         else:
             print(f'Kod nie wynosi 200, wynosi: {api_request.status_code}')
             print(f'Response for api_request is empty, retrying in 5 seconds...')
@@ -101,7 +101,7 @@ def loop_every_500_rows_and_make_request(from_date: datetime, to_date: datetime,
         to_timestamp_current_request = int(datetime.timestamp(to_date_current_request))
     
 
-    save_generated_files_to_csv(f'C:/Users/adam\Desktop/tradeBOT/{cryptosymbol}_data/{cryptosymbol}', f'{cryptosymbol}_data/{cryptosymbol}.csv')
+    save_generated_files_to_csv(f'C:/Users/adam\Desktop/tradeBOT/{cryptosymbol}_data/', f'{cryptosymbol}_data/{cryptosymbol}.csv')
     convert_csv_to_parquet(f'C:/Users/adam\Desktop/tradeBOT/{cryptosymbol}_data/{cryptosymbol}.csv', f'{cryptosymbol}_data/{cryptosymbol}.pq')
 
     

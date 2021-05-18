@@ -6,19 +6,19 @@ import functools
 from download_price_data import create_directory
 
 
-#def timer(func):
-#    """Print the runtime of the decorated function"""
-#    @functools.wraps(func)
-#    def wrapper_time(*args, **kwargs):
-#        # Do something before\
-#        start_time = time.perf_counter() # 1
-#        value = func(*args, **kwargs)
-#        # Do something after
-#        end_time = time.perf_counter() # 2
-#        run_time = end_time - start_time
-#        print(f'Finished {func.__name__!r} in {run_time:.4f} secs')
-#        return value
-#    return wrapper_time
+def timer(func):
+    """Print the runtime of the decorated function"""
+    @functools.wraps(func)
+    def wrapper_time(*args, **kwargs):
+        # Do something before\
+        start_time = time.perf_counter() # 1
+        value = func(*args, **kwargs)
+        # Do something after
+        end_time = time.perf_counter() # 2
+        run_time = end_time - start_time
+        print(f'Finished {func.__name__!r} in {run_time:.4f} secs')
+        return value
+    return wrapper_time
 
 
 #@timer
@@ -36,10 +36,8 @@ def overall_min_most_profitable(cryptosymbol, window_length):
         if os.path.isfile(path):
             print(os.path.join(min_directory, filename))
             data = pd.read_parquet(f'C:/Users/adam/Desktop/tradeBOT/{cryptosymbol}_data/simulation/{window_length}_days_window/min/{filename}')
-            #print(data)
             profit = data['balance'].sum()
             old_most_profitable = profit
-            #if old_most_profitable > new_most_profitable:
             new_most_profitable = old_most_profitable
             most_profitable_filename = filename.replace('2o', '').replace('1o', '')
             print(most_profitable_filename)
@@ -47,8 +45,7 @@ def overall_min_most_profitable(cryptosymbol, window_length):
             most_profitable_filename_list.append(most_profitable_filename)
             new_most_profitable_list.append(new_most_profitable)
             highest_lose_list.append(highest_lose.round(2))
-                #yield {'most_profitable_filename': most_profitable_filename.replace('2o', ''), 'new_most_profitable': new_most_profitable, 'highest_lose': highest_lose}
-            #print(profit)
+
     return {'most_profitable_filename': most_profitable_filename_list, 'new_most_profitable': new_most_profitable_list, 'highest_lose': highest_lose_list}
 
 
@@ -88,17 +85,14 @@ def result(cryptosymbol, window_length):
     most_profitable_min = overall_min_most_profitable(cryptosymbol, window_length)['new_most_profitable']
     most_profitable_filename_min = overall_min_most_profitable(cryptosymbol, window_length)['most_profitable_filename']
     highest_min_lose = overall_min_most_profitable(cryptosymbol, window_length)['highest_lose']
-    #if most_profitable_max > most_profitable_min:
-    #print(f'Most profitable strategy is MAX: buy at peak and sell after {most_profitable_filename_max} days, profit {most_profitable_max}, highest lose is {highest_max_lose}')
+
     table_max = pd.DataFrame(
         {'Sell after(days):': most_profitable_filename_max,
          'Profit($)/Loss($)': most_profitable_max,
          'Highest Loss($)': highest_max_lose
         })
     table_max.sort_values(['Profit($)/Loss($)'], inplace=True)
-    #print(table_max)
-    #else:
-    #print(most_profitable_filename_min, most_profitable_min, highest_min_lose[0])
+
     table_min = pd.DataFrame(
         {'Sell after(days):': most_profitable_filename_min,
          'Profit($)/Loss($)': most_profitable_min,
@@ -108,10 +102,3 @@ def result(cryptosymbol, window_length):
     #print(table_min)
     
     return {'table_min': table_min, 'table_max': table_max}
-
-
-result('BTCUSDT', '7')['table_min']
-#x = pd.read_parquet('C:/Users/adam/Desktop/tradeBOT/BTCUSDT_data/simulation/7_days_window/min/1o11')
-#d = np.isnan(x)
-#s = np.all(d['balance'] == False)
-#print(s)

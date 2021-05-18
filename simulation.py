@@ -9,9 +9,9 @@ from download_price_data import create_directory
 def test(path):
     df = pd.read_parquet(path)
     timestampdiff = np.diff(df.t.values)
-    #print(timestampdiff)
-    #print(np.where(timestampdiff != 60000000000))
-    #assert np.all(timestampdiff == 60000000000)
+    print(timestampdiff)
+    print(np.where(timestampdiff != 60000000000))
+    assert np.all(timestampdiff == 60000000000)
 
 
 def timer(func):
