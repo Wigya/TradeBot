@@ -1,9 +1,8 @@
 *.pq
 *.csv
-Bitcoin_data
-Ethereum_data
-LitCoin_data
+*_data
 test.py
 *.pyc
 *.ipynb
 .vscode*
+config.py
