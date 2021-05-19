@@ -32,6 +32,7 @@ def timer(func):
 #@timer
 def simulation(main_file, file_with_dates, amount_of_crypto, after_how_many_days_sell, cryptosymbol):
     datas = pd.read_parquet(main_file)
+    datas.reset_index(inplace=True)
     when_to_buy = pd.read_parquet(file_with_dates)
     bought_crypto_value = 0
     list_of_when_to_buy = when_to_buy['Dates'].tolist()
@@ -74,5 +75,5 @@ x = 1
 
 
 while x < 50:
-    simulation('C:/Users/adam/Desktop/tradeBOT/Bitcoin_data/bitcoin_data_indexxxx.pq', 'C:/Users/adam/Desktop/tradeBOT/BTCUSDT_data/model_7_days_min/min_BTCUSDT_dates.pq', 1, x, 'BTCUSDT')
+    simulation(r'C:\Users\adam\Desktop\tradeBOT\AAPL_data\AAPLL.pq', r'C:\Users\adam\Desktop\tradeBOT\AAPL_data\model_7_days_min\min_AAPL_dates.pq', 1, x, 'AAPL')
     x += 2

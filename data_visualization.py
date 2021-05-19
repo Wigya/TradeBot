@@ -67,40 +67,42 @@ def loss_plot(path):
     plt.show()
 
 
-def data_analysis_result_visualization():
+def data_analysis_result_visualization(cryptosymbol: str, windowlength: int, min_or_max: str):
     # Data
-    table_min = result('BTCUSDT', '7')['table_min']
-    print(table_min)
-    table_min['Sell after(days):'] = table_min['Sell after(days):'].astype(int)
-    table_min.sort_values(by='Sell after(days):', ascending=True, inplace=True)
-    print(table_min['Profit($)/Loss($)'].values)
-    print(table_min['Sell after(days):'].values)
+    table = result(cryptosymbol, windowlength, min_or_max)
+    print(table)
+    table['Sell after(days):'] = table['Sell after(days):'].astype(int)
+    table.sort_values(by='Sell after(days):', ascending=True, inplace=True)
+    print(table['Profit($)/Loss($)'].values)
+    print(table['Sell after(days):'].values)
     
     # Plotting
-    plt.plot(table_min['Sell after(days):'].values, table_min['Profit($)/Loss($)'].values)
+    plt.plot(table['Sell after(days):'].values, table['Profit($)/Loss($)'].values)
     plt.show()
 
 
-#data_analysis_result_visualization()
+#data_analysis_result_visualization('BTCUSDT', 7, 'max')
 
 
-def concatenate_into_full_data(balance_directory, initial_dates_directory):
-    """Function concatenates dates and balances into one file"""
-    full_data_directory = 'C:/Users/adam/Desktop/tradeBOT/BTCUSDT_data/simulation/7_days_window/min/full_data/'
-    create_directory(full_data_directory)
+def concatenate_into_full_data(balance_directory, initial_dates_directory, end_dates_directory, full_data_path):
+    """Function concatenates dates and balances into one file
+    -----------------------
+    full_data_path should be a path to store new concatenated files 
+    """
+    create_directory(full_data_path)
     for filename in os.listdir(balance_directory):
         file_directory = balance_directory + filename
         try:
-            df = pd.read_parquet(f'C:/Users/adam/Desktop/tradeBOT/BTCUSDT_data/simulation/7_days_window/min/dates/end_dates{filename}.pq')
-            fd = pd.read_parquet(f'C:/Users/adam/Desktop/tradeBOT/BTCUSDT_data/simulation/7_days_window/min/dates/initial_dates{filename}.pq')
-            fdd = pd.read_parquet(f'C:/Users/adam/Desktop/tradeBOT/BTCUSDT_data/simulation/7_days_window/min/{filename}')
+            df = pd.read_parquet(f'{end_dates_directory}/end_dates{filename}.pq')
+            fd = pd.read_parquet(f'{initial_dates_directory}/initial_dates{filename}.pq')
+            fdd = pd.read_parquet(f'{balance_directory}/{filename}')
         except FileNotFoundError as e:
             break
         full_data = pd.concat([fdd['balance'], fd['initial_date'], df['close_date']], axis=1)
         full_data.dropna(inplace=True)
-        full_data.to_parquet(f'C:/Users/adam/Desktop/tradeBOT/BTCUSDT_data/simulation/7_days_window/min/full_data/full_data{filename}.pq')
+        full_data.to_parquet(f'{full_data_path}/full_data{filename}.pq')
 
-#concatenate_into_full_data('C:/Users/adam/Desktop/tradeBOT/BTCUSDT_data/simulation/7_days_window/min/', 'C:/Users/adam/Desktop/tradeBOT/BTCUSDT_data/simulation/7_days_window/min/dates/')
+#concatenate_into_full_data('C:/Users/adam/Desktop/tradeBOT/BTCUSDT_data/simulation/7_days_window/min/', 'C:/Users/adam/Desktop/tradeBOT/BTCUSDT_data/simulation/7_days_window/min/dates/', 'C:/Users/adam/Desktop/tradeBOT/BTCUSDT_data/simulation/7_days_window/min/dates/', r'C:\Users\adam\Desktop\tradeBOT\BTCUSDT_data\simulation\7_days_window\min\xd')
 
 
 def resample_data(full_data_directory):
@@ -129,4 +131,4 @@ def full_data_visualization(full_data_directory):
     plt.show()
 
 
-full_data_visualization(r'C:/Users/adam/Desktop/tradeBOT/BTCUSDT_data/simulation/7_days_window/min/full_data/')
+#full_data_visualization(r'C:/Users/adam/Desktop/tradeBOT/BTCUSDT_data/simulation/7_days_window/min/full_data/')
