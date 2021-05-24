@@ -71,7 +71,7 @@ def simulation(main_file, file_with_dates, amount_of_crypto, after_how_many_days
     eventualdf.to_parquet(f'C:/Users/adam/Desktop/tradeBOT/{cryptosymbol}_data/simulation/7_days_window/min/{amount_of_crypto}o{after_how_many_days_sell}')
     print(eventualdf)
 
-x = 1
+x = 3
 
 
 while x < 50:

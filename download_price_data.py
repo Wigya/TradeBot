@@ -8,11 +8,10 @@ import time
 import os
 import pyarrow as pa
 import pyarrow.parquet as pq
-import config # Local file
+from config import api_key # Local file
 
 
 # My finnhub client ID
-api_key = config.api_token()
 finnhub_client = finnhub.Client(api_key=api_key)
 
 

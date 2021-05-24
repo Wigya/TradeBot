@@ -100,7 +100,6 @@ def resample_data(file_path):
     df.index = pd.to_datetime(df.index)
     df = df.resample(rule='1T').agg({'c':'first','h':'first','l':'first','o':'first','s':'first','v':'first'})
     df = df.fillna(method='ffill')
-    df.to_parquet(file_path)
     print(df)
 
 def loop_every_500_rows_and_make_request(from_date: datetime, to_date: datetime, cryptosymbol):
