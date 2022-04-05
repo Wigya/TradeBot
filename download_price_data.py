@@ -8,7 +8,7 @@ import time
 import os
 import pyarrow as pa
 import pyarrow.parquet as pq
-from config import api_key # Local file
+from config import api_key  # Local file
 
 
 # My finnhub client ID
@@ -31,7 +31,7 @@ def make_request_create_parque(crypto_symbol, resolution, from_timestamp, to_tim
             print('Creating Parquet')
             parquet = df.to_parquet(folder_filename)
             print(pd.read_parquet(folder_filename))
-            break #######IF SOMETHING DOES NOT WORK REMOVING THIS MIGHT BE SOLUTION
+            break  # IF SOMETHING DOES NOT WORK REMOVING THIS MIGHT BE SOLUTION
         else:
             print(f'Kod nie wynosi 200, wynosi: {api_request.status_code}')
             print(f'Response for api_request is empty, retrying in 5 seconds...')
@@ -66,7 +66,7 @@ def save_generated_files_to_csv(path_to_files, file_name):
     with open(file_name, "w") as csv_handle:
         for i, parquet_path in enumerate(data_dir.glob('*.pq')):
             df = pd.read_parquet(parquet_path)
-            write_header = i == 0 #  write header only on the 0th file
+            write_header = i == 0  # write header only on the 0th file
             df.to_csv(csv_handle, header=write_header, index=False)
             os.remove(parquet_path)
 
@@ -75,12 +75,12 @@ def convert_csv_to_parquet(csv_name, parquet_name):
     df = pd.read_csv(csv_name)
     df = df.drop_duplicates()
     #df.sort_values(['Date'], inplace=True)
-    #os.remove(csv_name)
+    # os.remove(csv_name)
     df.to_parquet(parquet_name)
 
 
 def create_directory(path):
-    if not os.path.exists('C:/Users/adam/Desktop/test/chuj'):
+    if not os.path.exists('C:/Users/adam/Desktop/test/test_1'):
         try:
             os.makedirs(path)
         except OSError:
@@ -92,7 +92,8 @@ def resample_data(file_path):
     df = pd.read_parquet(file_path)
     print(df)
     df.index = pd.to_datetime(df.index)
-    df = df.resample(rule='1T').agg({'c':'first','h':'first','l':'first','o':'first','s':'first','v':'first'})
+    df = df.resample(rule='1T').agg(
+        {'c': 'first', 'h': 'first', 'l': 'first', 'o': 'first', 's': 'first', 'v': 'first'})
     df = df.fillna(method='ffill')
     df.to_parquet(file_path)
     print(df)
@@ -111,28 +112,38 @@ def loop_every_500_rows_and_make_request(from_date: datetime, to_date: datetime,
     create_directory(f'C:/Users/adam\Desktop/tradeBOT/{cryptosymbol}_data')
     from_date_current_request = from_date
     to_date_current_request = from_date + timedelta(minutes=500)
-    from_timestamp_current_request = int(datetime.timestamp(from_date_current_request))
-    to_timestamp_current_request = int(datetime.timestamp(to_date_current_request))
+    from_timestamp_current_request = int(
+        datetime.timestamp(from_date_current_request))
+    to_timestamp_current_request = int(
+        datetime.timestamp(to_date_current_request))
     while True:
         if to_date_current_request > to_date:
             break
-        print(f'Making request{from_date_current_request}, {to_date_current_request}')
-        make_request_create_parque(cryptosymbol, 1, from_timestamp_current_request, to_timestamp_current_request, f'{cryptosymbol}_data\{cryptosymbol}'+ '-' + str(from_timestamp_current_request) + '.pq')
+        print(
+            f'Making request{from_date_current_request}, {to_date_current_request}')
+        make_request_create_parque(cryptosymbol, 1, from_timestamp_current_request, to_timestamp_current_request,
+                                   f'{cryptosymbol}_data\{cryptosymbol}' + '-' + str(from_timestamp_current_request) + '.pq')
 
         from_date_current_request += timedelta(minutes=500)
         to_date_current_request += timedelta(minutes=500)
-        from_timestamp_current_request = int(datetime.timestamp(from_date_current_request))
-        to_timestamp_current_request = int(datetime.timestamp(to_date_current_request))
-    
+        from_timestamp_current_request = int(
+            datetime.timestamp(from_date_current_request))
+        to_timestamp_current_request = int(
+            datetime.timestamp(to_date_current_request))
+
     print('saving generated files to csv')
-    save_generated_files_to_csv(f'C:/Users/adam\Desktop/tradeBOT/{cryptosymbol}_data/', f'{cryptosymbol}_data/{cryptosymbol}.csv')
+    save_generated_files_to_csv(
+        f'C:/Users/adam\Desktop/tradeBOT/{cryptosymbol}_data/', f'{cryptosymbol}_data/{cryptosymbol}.csv')
     print('converting csv to parquet')
-    convert_csv_to_parquet(f'C:/Users/adam\Desktop/tradeBOT/{cryptosymbol}_data/{cryptosymbol}.csv', f'{cryptosymbol}_data/{cryptosymbol}.pq')
+    convert_csv_to_parquet(
+        f'C:/Users/adam\Desktop/tradeBOT/{cryptosymbol}_data/{cryptosymbol}.csv', f'{cryptosymbol}_data/{cryptosymbol}.pq')
     print('Setting index to datetime')
-    set_index_to_datetime(f'C:/Users/adam/Desktop/tradeBOT/{cryptosymbol}_data/{cryptosymbol}.pq', 5)
+    set_index_to_datetime(
+        f'C:/Users/adam/Desktop/tradeBOT/{cryptosymbol}_data/{cryptosymbol}.pq', 5)
     print('Resampling data')
-    resample_data(f'C:/Users/adam/Desktop/tradeBOT/{cryptosymbol}_data/{cryptosymbol}.pq')
-    
+    resample_data(
+        f'C:/Users/adam/Desktop/tradeBOT/{cryptosymbol}_data/{cryptosymbol}.pq')
+
     # assertion whether data is sorted by time or not
     df = pd.read_parquet(f'{cryptosymbol}_data/{cryptosymbol}.pq')
     timestampdiff = np.diff(df.t.values)
